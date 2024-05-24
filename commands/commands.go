@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"errors"
 	"fmt"
+	"os"
 )
 
 type CliCommand struct {
@@ -43,5 +43,6 @@ func commandHelp() error {
 }
 
 func commandExit() error {
-	return errors.New("")
+	os.Exit(0)
+	return nil
 }

@@ -23,9 +23,6 @@ func startRepl() {
 			fmt.Println("Invalid input. Enter help to show all options.")
 			continue
 		}
-		error := commands[input].Callback()
-		if error != nil {
-			break
-		}
+		commands[input].Callback()
 	}
 }
