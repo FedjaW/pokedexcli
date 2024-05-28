@@ -10,7 +10,8 @@ import (
 
 func startRepl() {
 	const PROMPT string = "pokedex > "
-	commands := commands.GetCliCommandsMap()
+	cmds := commands.GetCliCommandsMap()
+	cfg := commands.NewConfig()
 	for {
 		fmt.Print(PROMPT)
 		scanner := bufio.NewScanner(os.Stdin)
@@ -19,10 +20,13 @@ func startRepl() {
 		if len(input) == 0 {
 			continue
 		}
-		if _, ok := commands[input]; !ok {
+		if _, ok := cmds[input]; !ok {
 			fmt.Println("Invalid input. Enter help to show all options.")
 			continue
 		}
-		commands[input].Callback()
+		err := cmds[input].Callback(&cfg)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
