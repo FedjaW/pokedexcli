@@ -79,7 +79,7 @@ func commandMap(cfg *Config) error {
 	cfg.Next = locationAreas.Next
 	cfg.Prev = locationAreas.Previous
 	for _, locationArea := range locationAreas.Results {
-		fmt.Println(locationArea.Name)
+		fmt.Println("- " + locationArea.Name)
 	}
 	return err
 }
@@ -88,12 +88,11 @@ func commandMapb(cfg *Config) error {
 	if cfg.Prev == nil {
 		return errors.New("no prev location")
 	}
-
 	locationAreas, err := api.GetMap(*cfg.Prev)
 	cfg.Next = locationAreas.Next
 	cfg.Prev = locationAreas.Previous
 	for _, locationArea := range locationAreas.Results {
-		fmt.Println(locationArea.Name)
+		fmt.Println("- " + locationArea.Name)
 	}
 	return err
 }

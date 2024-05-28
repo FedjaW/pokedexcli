@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -25,22 +24,23 @@ type LocationAreasResponse struct {
 func GetMap(url string) (LocationAreasResponse, error) {
 	res, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		// note: you dont want to have log.Fatal embedded within your application
+		// usefull in the beginning of your main function
+		// but this far down in the callstack we want to return error
+		// log.Fatal(err)
 		return LocationAreasResponse{}, err
 	}
 	body, err := io.ReadAll(res.Body)
 	res.Body.Close()
 	if res.StatusCode > 299 {
-		log.Fatalf("Response failed with status code: %d and\nbody: %s\n", res.StatusCode, body)
-		return LocationAreasResponse{}, errors.New("error")
+		return LocationAreasResponse{}, errors.New("response failed with status code: %d and\nbody: %s")
 	}
 	if err != nil {
-		log.Fatal(err)
+		return LocationAreasResponse{}, err
 	}
 	locationAreas := LocationAreasResponse{}
 	err = json.Unmarshal(body, &locationAreas)
 	if err != nil {
-		log.Fatal(err)
 		return LocationAreasResponse{}, err
 	}
 	return locationAreas, nil
