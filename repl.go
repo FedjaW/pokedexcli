@@ -11,75 +11,83 @@ import (
 )
 
 type config struct {
-    Next *string
-    Previous *string
-    Cache *pokecache.Cache
+	Next     *string
+	Previous *string
+	Cache    *pokecache.Cache
 }
 
 type cliCommand struct {
-    name string
-    description string
-    callback func(*config) error
+	name        string
+	description string
+	callback    func(*config, string) error
 }
 
 func getCommands() map[string]cliCommand {
-    return map[string]cliCommand{
-        "exit": {
-            name: "exit",
-            description: "Exit the Pokedex",
-            callback: commandExit,
-        },
-        "help": {
-            name: "help",
-            description: "Displays a help message",
-            callback: commandHelp,
-        },
-        "map": {
-            name: "map",
+	return map[string]cliCommand{
+		"exit": {
+			name:        "exit",
+			description: "Exit the Pokedex",
+			callback:    commandExit,
+		},
+		"help": {
+			name:        "help",
+			description: "Displays a help message",
+			callback:    commandHelp,
+		},
+		"map": {
+			name:        "map",
 			description: "Displays the names of the next 20 location areas in the Pokemon world",
-            callback: commandMap,
-        },
-        "mapb": {
-            name: "mapb",
+			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
 			description: "Displays the names of the previous 20 location areas in the Pokemon world",
-            callback: commandMapb,
-        },
-    }
+			callback:    commandMapb,
+		},
+		"explore": {
+			name:        "explore",
+			description: "Displays the names of the pokemons for the given location areas in the Pokemon world",
+			callback:    commandExplore,
+		},
+	}
 }
 
 func startRepl() {
-    const PROMT = "Pokedex > " 
+	const PROMT = "Pokedex > "
 
-    cache := pokecache.NewCache(5 * time.Second)
-    cfg := config{
-        Next: nil,
-        Previous: nil,
-        Cache: cache,
-    }
+	cache := pokecache.NewCache(5 * time.Second)
+	cfg := config{
+		Next:     nil,
+		Previous: nil,
+		Cache:    cache,
+	}
 
-    scanner := bufio.NewScanner(os.Stdin)
-    for {
-        fmt.Print(PROMT)
-        scanner.Scan()
-        text := scanner.Text()
-        cleanedTextArray := cleanInput(text)
-        command := cleanedTextArray[0]
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Print(PROMT)
+		scanner.Scan()
+		text := scanner.Text()
+		cleanedTextArray := cleanInput(text)
+		command := cleanedTextArray[0]
 
-        commands := getCommands()
+		parameter := ""
+		if len(cleanedTextArray) > 1 {
+			parameter = cleanedTextArray[1]
+		}
 
-        c, ok := commands[command]
+		commands := getCommands()
+		c, ok := commands[command]
 
-        if !ok {
-            fmt.Println("Unknown command")
-        } else {
-            err := c.callback(&cfg)
-            if err != nil {
-                fmt.Println(err)
-            }
-        }
-    }
+		if !ok {
+			fmt.Println("Unknown command")
+		} else {
+			err := c.callback(&cfg, parameter)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
 }
-
 
 func cleanInput(text string) []string {
 	output := strings.ToLower(text)

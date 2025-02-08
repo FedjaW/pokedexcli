@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -7,23 +6,23 @@ import (
 	"github.com/fedjaw/pokedexcli/internal/api"
 )
 
-func commandMapb(cfg *config) error {
-    if cfg.Previous == nil {
-        fmt.Println("you're on the first page")
-        return nil
-    }
+func commandMapb(cfg *config, name string) error {
+	if cfg.Previous == nil {
+		fmt.Println("you're on the first page")
+		return nil
+	}
 
-    locationAreaResponse, err := api.GetMap(*cfg.Previous, cfg.Cache)
-    if err != nil {
-        return err
-    }
+	locationAreaResponse, err := api.GetMap(*cfg.Previous, cfg.Cache)
+	if err != nil {
+		return err
+	}
 
-    cfg.Next = locationAreaResponse.Next
-    cfg.Previous = locationAreaResponse.Previous
+	cfg.Next = locationAreaResponse.Next
+	cfg.Previous = locationAreaResponse.Previous
 
-    for _, locationArea := range locationAreaResponse.Results {
-        fmt.Println(locationArea.Name)
-    }
+	for _, locationArea := range locationAreaResponse.Results {
+		fmt.Println(locationArea.Name)
+	}
 
-    return nil
+	return nil
 }
