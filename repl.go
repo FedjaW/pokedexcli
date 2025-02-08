@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/fedjaw/pokedexcli/internal/api"
 	"github.com/fedjaw/pokedexcli/internal/pokecache"
 )
 
@@ -14,6 +15,11 @@ type config struct {
 	Next     *string
 	Previous *string
 	Cache    *pokecache.Cache
+	Pokedex  *pokedex
+}
+
+type pokedex struct {
+	Pokemons map[string]api.PokemonResponse
 }
 
 type cliCommand struct {
@@ -49,6 +55,21 @@ func getCommands() map[string]cliCommand {
 			description: "Displays the names of the pokemons for the given location areas in the Pokemon world",
 			callback:    commandExplore,
 		},
+		"catch": {
+			name:        "catch",
+			description: "Attempts to catch a pokemon",
+			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "inspect",
+			description: "Inspect a pokemon",
+			callback:    commandInspect,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "Inspect your pokedex",
+			callback:    commandPokedex,
+		},
 	}
 }
 
@@ -60,6 +81,9 @@ func startRepl() {
 		Next:     nil,
 		Previous: nil,
 		Cache:    cache,
+		Pokedex: &pokedex{
+			Pokemons: make(map[string]api.PokemonResponse),
+		},
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
